@@ -97,6 +97,9 @@ public class Bilety {
             suma += wagaBagazu;
         }
         System.out.println(suma);
+        System.out.println("aaaa");
+
+
     }
 
     public void czyDodacPasazera(List<String> listaPasazerow){
