@@ -1,12 +1,11 @@
 package com.example.demo;
 
-import javax.swing.*;
-import java.sql.SQLOutput;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
 
-public class Bilety {
+public class LotSerwis {
     List<String> oblugiwaneKierunki = new ArrayList<>();
 
     public List<String> dodajKierunki() {
@@ -34,16 +33,18 @@ public class Bilety {
         return imie;
     }
 
-    public void podajCelPodrozy(String imie,List<String> listaPasazerow) {
+    public void podajCelPodrozy(String imie,List<Pasazer> listaPasazerow) {
         Scanner scanner = new Scanner(System.in);
         System.out.println("Proszę podać cel podróży");
         String cel = scanner.nextLine();
+
 
         if (oblugiwaneKierunki.contains(cel)) {
             System.out.println("Lecimy do tego kraju");
             System.out.println("Proszę podać wagę bagażu:");
             Double waga = scanner.nextDouble();
-            dodajPasazera(imie);
+            Pasazer pasazer = new Pasazer(imie, cel, waga);
+            dodajPasazera(pasazer);
             dodajWageBagazu(waga);
             czyDodacPasazera(listaPasazerow);
 
@@ -58,17 +59,17 @@ public class Bilety {
     }
 
 
-    List<String> listaPasazerow = new ArrayList<>();
+    List<Pasazer> listaPasazerow = new ArrayList<>();
 
-    public List<String> dodajPasazera(String imie) {
-        listaPasazerow.add(imie);
+    public List<Pasazer> dodajPasazera(Pasazer pasazer) {
+        listaPasazerow.add(pasazer);
         return listaPasazerow;
 
     }
 
-    public void wypiszPasazerow(List<String> listaPasazerow) {
+    public void wypiszPasazerow(List<Pasazer> listaPasazerow) {
         System.out.println("Lista pasażerów to:");
-        for (String pasazer : listaPasazerow) {
+        for (Pasazer pasazer : listaPasazerow) {
             System.out.println(pasazer);
         }
 
@@ -97,12 +98,12 @@ public class Bilety {
             suma += wagaBagazu;
         }
         System.out.println(suma);
-        System.out.println("aaaa");
+
 
 
     }
 
-    public void czyDodacPasazera(List<String> listaPasazerow){
+    public void czyDodacPasazera(List<Pasazer> listaPasazerow){
         Scanner scanner = new Scanner(System.in);
         System.out.println("Czy chcesz dodać kolejnego pasażera?");
         String odpowiedz = scanner.nextLine();
