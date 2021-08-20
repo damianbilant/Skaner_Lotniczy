@@ -70,7 +70,7 @@ public class LotSerwis {
     public void wypiszPasazerow(List<Pasazer> listaPasazerow) {
         System.out.println("Lista pasażerów to:");
         for (Pasazer pasazer : listaPasazerow) {
-            System.out.println(pasazer);
+            System.out.println(pasazer.getImie());
         }
 
 
