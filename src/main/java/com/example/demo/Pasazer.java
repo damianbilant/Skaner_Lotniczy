@@ -5,6 +5,7 @@ public class Pasazer {
     private String kierunek;
     private Double wagaBagazu;
 
+
     public Pasazer(String imie, String kierunek, Double wagaBagazu) {
         this.imie = imie;
         this.kierunek = kierunek;
