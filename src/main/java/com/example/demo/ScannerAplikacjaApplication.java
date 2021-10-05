@@ -13,6 +13,9 @@ public class ScannerAplikacjaApplication {
 
 		LotSerwis lotSerwis = new LotSerwis();
 
+		lotSerwis.konfiguracja();
+
+
 		lotSerwis.start(lotSerwis.podajImie(), lotSerwis.podajCelPodrozy(), lotSerwis.podajWageBagazu());
 
 		//lotSerwis.sprawdzenie();
