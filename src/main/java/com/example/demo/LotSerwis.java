@@ -12,53 +12,32 @@ import java.util.Scanner;
 @Service
 
 
-
 public class LotSerwis {
 
-    /*private final SamolotSerwis samolotSerwis;
-
-    public LotSerwis(SamolotSerwis samolotSerwis) {
-        this.samolotSerwis = samolotSerwis;
-    }
-
-    SamolotSerwis samolotSerwis2 = new SamolotSerwis();
-    samolotSerwis2.*/
 
 
-    Samolot samolot1 = new Samolot("Dreamliner", 3, 25.5);
-    Samolot samolot2 = new Samolot("Airbus", 2, 20.1);
-    Samolot samolot3 = new Samolot("Tupolev", 1, 15.4);
 
-    //TODO: zrobić jedną listę i dodać wszystkie kierunki do niej
     List<Pasazer> listaPasazerow = new ArrayList<>();
 
     List<Kierunek> wszystkieKierunki = new ArrayList<>();
 
+    KierunekSerwis kierunekSerwis = new KierunekSerwis();
 
     public List<Kierunek> dodajKierunki() {
-        wszystkieKierunki.add(kierunek1);
-        wszystkieKierunki.add(kierunek2);
-        wszystkieKierunki.add(kierunek3);
-        wszystkieKierunki.add(kierunek4);
-        wszystkieKierunki.add(kierunek5);
+        wszystkieKierunki.add(kierunekSerwis.kierunek1);
+        wszystkieKierunki.add(kierunekSerwis.kierunek2);
+        wszystkieKierunki.add(kierunekSerwis.kierunek3);
+        wszystkieKierunki.add(kierunekSerwis.kierunek4);
+        wszystkieKierunki.add(kierunekSerwis.kierunek5);
 
         return wszystkieKierunki;
     }
 
 
-    Kierunek kierunek1 = new Kierunek("Polska", Status.OBSLUGIWANY, samolot1);
-    Kierunek kierunek2 = new Kierunek("USA", Status.OBSLUGIWANY, samolot2);
-    Kierunek kierunek3 = new Kierunek("Chiny", Status.NIEOBSLUGIWANY, samolot3);
-    Kierunek kierunek4 = new Kierunek("Japonia", Status.ZAWIESZONY, samolot3);
-    Kierunek kierunek5 = new Kierunek("RPA", Status.NIEOBSLUGIWANY, samolot2);
 
 
-    /*public void sprawdzenie() {
-        Double obojetnie = samolot1.getMaxWagaBagazu();
-        System.out.println(obojetnie);
-    }*/
 
-    public void konfiguracja(){
+    public void konfiguracja() {
         dodajKierunki();
 
     }
@@ -79,15 +58,22 @@ public class LotSerwis {
         return cel;
     }
 
-    public Double podajWageBagazu() {
+    public Double podajWageBagazu() throws ObslugaBledow {
         System.out.println("Proszę podać wagę bagażu:");
         Scanner scanner = new Scanner(System.in);
-        Double waga = scanner.nextDouble();
-        return waga;
+        Double waga = 0.0;
+        try {
+             waga = scanner.nextDouble();
 
+
+            return waga;
+        } catch (Exception e) {
+            new ObslugaBledow(TypBledu.BRAK_WARTOSCI, "Waga musi być podana");
+        }
+        return waga;
     }
 
-    public void start(String imie, String cel, Double waga) {
+    public void start(String imie, String cel, Double waga) throws ObslugaBledow {
         Pasazer pasazer = new Pasazer(imie, cel, waga);
         Kierunek destynacja = sprawdzKierunek(cel);
         sprawdzStatus(destynacja, pasazer, destynacja.getSamolot());
@@ -103,7 +89,7 @@ public class LotSerwis {
         return tamGdzielece;
     }
 
-    public void sprawdzStatus(Kierunek kierunek, Pasazer pasazer, Samolot samolot) {
+    public void sprawdzStatus(Kierunek kierunek, Pasazer pasazer, Samolot samolot) throws ObslugaBledow {
         if (kierunek.getStatus().equals(Status.OBSLUGIWANY)) {
             sprawdzWageLiczbeMiejsc(pasazer, samolot);
             czyDodacPasazera();
@@ -116,7 +102,6 @@ public class LotSerwis {
             }
             System.out.println("Konieczna zmiana kierunku i podanie jeszcze raz danych");
             start(podajImie(), podajCelPodrozy(), podajWageBagazu());
-            //przekierować pasażera do wyboru kierunku (wrzucić metodę która pozwala podać znowu cel podróży)
         }
 
     }
@@ -144,27 +129,31 @@ public class LotSerwis {
         return waga;
     }
 
-    public void sprawdzWageLiczbeMiejsc(Pasazer pasazer, Samolot samolot) {
+    public void sprawdzWageLiczbeMiejsc(Pasazer pasazer, Samolot samolot) throws ObslugaBledow {
 
         Integer jedenKierunek = liczbaPodroznych(pasazer);
         Double jednaWaga = wagaBagazy(pasazer);
 
-        if (jedenKierunek < samolot.getLiczbaMiejsc() && jednaWaga < samolot.getMaxWagaBagazu()) {
-            listaPasazerow.add(pasazer);
+        if (jedenKierunek + 1 <= samolot.getLiczbaMiejsc()) {
+            if (jednaWaga + pasazer.getWagaBagazu() <= samolot.getMaxWagaBagazu()) {
+                listaPasazerow.add(pasazer);
+                wypisaniePasazerow();
+            } else {
+                System.out.println("Brak wolnego bagażu do " + pasazer.getKierunek());
+                szczegolyKierunkuWaga(pasazer);
+                szczegolyKierunkuMiejsce(pasazer);
+            }
         } else {
-            System.out.println("Brak miejsc do " + pasazer.getKierunek() + " lub bagaż za duży.");
+            System.out.println("Brak miejsc do " + pasazer.getKierunek());
             szczegolyKierunkuMiejsce(pasazer);
             start(podajImie(), podajCelPodrozy(), podajWageBagazu());
-            //liczba miejsc lub waga przekroczona
 
-
-
-            //TODO: wypisać szczegóły obsługiwanego kierunku (ile wolnych miejsc, ile wolnych kg dla bagażu)
 
         }
     }
 
-    public void szczegolyKierunkuMiejsce (Pasazer pasazer) {
+
+    public void szczegolyKierunkuMiejsce(Pasazer pasazer) {
         Integer liczbaWolnychMiejsc = 0;
         for (Kierunek kierunek : wszystkieKierunki) {
             if (kierunek.getDestynacja().equals(pasazer.getKierunek())) {
@@ -173,13 +162,28 @@ public class LotSerwis {
                 liczbaWolnychMiejsc = liczbaMiejsc - liczbaPodroznych;
             }
         }
-            System.out.println("Liczba wolnych miejsc do " + pasazer.getKierunek() + ": " + liczbaWolnychMiejsc);
-
+        System.out.println("Liczba wolnych miejsc do " + pasazer.getKierunek() + ": " + liczbaWolnychMiejsc);
     }
+
+    public void szczegolyKierunkuWaga(Pasazer pasazer) {
+        Double wagaWolnegoBagazu = 0.0;
+        for (Kierunek kierunek : wszystkieKierunki) {
+            if (kierunek.getDestynacja().equals(pasazer.getKierunek())) {
+                Double wagaBagazy = kierunek.getSamolot().getMaxWagaBagazu();
+                Double wagaBagazu = wagaBagazy(pasazer);
+                wagaWolnegoBagazu = wagaBagazy - wagaBagazu;
+                if (wagaWolnegoBagazu < 0.0) {
+                    wagaWolnegoBagazu = 0.0;
+                }
+            }
+        }
+        System.out.println("Liczba kg wolnego bagażu do " + pasazer.getKierunek() + ": " + wagaWolnegoBagazu);
+    }
+
+
     public void wypisaniePasazerow() {
         for (Kierunek kierunek : wszystkieKierunki) {
             if (kierunek.getStatus().equals(Status.OBSLUGIWANY)) {
-                //TODO: zamienić if na switch
                 System.out.println("Pasażerowie lecący do " + kierunek.getDestynacja() + ":");
                 for (Pasazer pasazer : listaPasazerow) {
                     if (pasazer.getKierunek().equals(kierunek.getDestynacja())) {
@@ -218,7 +222,7 @@ public class LotSerwis {
         }
     }*/
 
-    public void czyDodacPasazera() {
+    public void czyDodacPasazera() throws ObslugaBledow {
         Scanner scanner = new Scanner(System.in);
         System.out.println("Czy chcesz dodać kolejnego pasażera?");
         String odpowiedz = scanner.nextLine();
@@ -227,8 +231,7 @@ public class LotSerwis {
             start(podajImie(), podajCelPodrozy(), podajWageBagazu());
 
         } else if (odpowiedz.equals("nie")) {
-            //TODO: stworzyć metodę i tu ją wywołać, która wypisze wszystkich pasażerów z podziałem na destynację
-           wypisaniePasazerow();
+            wypisaniePasazerow();
 
         } else {
             System.out.println("Błędna komenda");
